@@ -6,7 +6,36 @@ from sklearn.linear_model import LinearRegression
 
 # إعداد الصفحة
 st.set_page_config(page_title="AI Sales Forecasting System", page_icon="📈", layout="wide")
+# --- إضافة خلفية متحركة هادية ومتناسقة مع الدارك مود ---
+st.markdown(
+    """
+    <style>
+    /* تثبيت الخلفية وجعلها تغطي الشاشة بالكامل خلف العناصر */
+    .stApp {
+        background: linear-gradient(125deg, #0e1117, #161b22, #0d1117, #1f242c);
+        background-size: 400% 400%;
+        animation: GradientAnimation 15s ease infinite;
+    }
 
+    /* تأثير الحركة الانسيابية البطيئة (أشبه بأمواج الألوان الهادئة) */
+    @keyframes GradientAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* جعل الكروت والصناديق شفافة بشكل زجاجي احترافي (Glassmorphism) */
+    div[data-testid="stMetricValue"], div[data-testid="stExpander"], .stAlert {
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 st.title("📈 AI Sales Forecasting System")
 st.subheader("Predict future sales and analyze business performance using Machine Learning")
 
