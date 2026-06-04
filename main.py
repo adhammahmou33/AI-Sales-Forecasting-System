@@ -4,32 +4,54 @@ import numpy as np
 import plotly.express as px
 from sklearn.linear_model import LinearRegression
 
-# إعداد الصفحة لتكون احترافية وعريضة والتفاعل سريع
+# إعداد الصفحة
 st.set_page_config(page_title="AI Sales Forecasting System", page_icon="📈", layout="wide")
 
 st.title("📈 AI Sales Forecasting System")
 st.subheader("Predict future sales and analyze business performance using Machine Learning")
 
-# تحديد مسار ملف الأكسيل المتاح في الفولدر
 file_path = "Updatee_Sales_Analysis_Report.xlsx"
 
 try:
-    # قراءة البيانات مباشرة هنا لضمان التفاعل
     df = pd.read_excel(file_path)
-    
-    st.success("🎉 Data loaded and synchronized successfully!")
-    
-    # تنظيف أسماء الأعمدة (تأمين ضد الحروف الكابيتال والسمول)
     df.columns = [c.strip().title() for c in df.columns]
     
-    # --- 1. عرض الأرقام الكبيرة (KPIs) ---
+    # ---------------- 🎛️ قسم الفلاتر التفاعلية (Sidebar) ----------------
+    st.sidebar.header("🎯 Dashboard Filters")
+    
+    # فلتر الدول
+    if "Country" in df.columns:
+        all_countries = ["All Countries"] + list(df["Country"].unique())
+        selected_country = st.sidebar.selectbox("Select Country:", all_countries)
+    else:
+        selected_country = "All Countries"
+        
+    # فلتر البراندات / الأنواع
+    if "Type" in df.columns:
+        all_types = ["All Types"] + list(df["Type"].unique())
+        selected_type = st.sidebar.selectbox("Select Product Type:", all_types)
+    else:
+        selected_type = "All Types"
+
+    # تطبيق الفلاتر على البيانات ديناميكياً (الـ Action الحقيقي)
+    df_filtered = df.copy()
+    if selected_country != "All Countries":
+        df_filtered = df_filtered[df_filtered["Country"] == selected_country]
+    if selected_type != "All Types":
+        df_filtered = df_filtered[df_filtered["Type"] == selected_type]
+
+    st.sidebar.markdown("---")
+    # ------------------------------------------------------------------
+
+    st.success(f"🎉 Dashboard synced! Showing data for: {selected_country} | {selected_type}")
+    
+    # --- 1. عرض الأرقام الكبيرة بناءً على الفلتر ---
     st.markdown("### 📊 The Big Numbers")
     col1, col2, col3 = st.columns(3)
     
-    # التأكد من وجود الأعمدة الحسابية قبل الجمع
-    total_profits = df["Profits"].sum() if "Profits" in df.columns else 0
-    total_sales_count = len(df)
-    avg_price = df["Price"].mean() if "Price" in df.columns else (df["Sales"].mean() if "Sales" in df.columns else 0)
+    total_profits = df_filtered["Profits"].sum() if "Profits" in df_filtered.columns else 0
+    total_sales_count = len(df_filtered)
+    avg_price = df_filtered["Price"].mean() if "Price" in df_filtered.columns else (df_filtered["Sales"].mean() if "Sales" in df_filtered.columns else 0)
     
     col1.metric("Total Sales Profits", f"${total_profits:,.2f}")
     col2.metric("Total Sales Count", f"{total_sales_count:,}")
@@ -37,64 +59,57 @@ try:
     
     st.markdown("---")
     
-    # --- 2. قسم الرسومات البيانية التفاعلية الكاملة بـ Plotly ---
+    # --- 2. قسم الرسومات البيانية التفاعلية المفلترة ---
     st.markdown("### 🔍 Interactive Business Insights")
     chart_col1, chart_col2 = st.columns(2)
     
     with chart_col1:
-        # الرسمة 1: أعلى 4 دول تحقيقاً للأرباح
-        if "Country" in df.columns and "Profits" in df.columns:
-            top_countries = df.groupby("Country")["Profits"].sum().sort_values(ascending=False).head(4).reset_index()
-            fig1 = px.bar(top_countries, x="Country", y="Profits", title="Top 4 Countries by Profits",
+        if "Country" in df_filtered.columns and "Profits" in df_filtered.columns:
+            top_countries = df_filtered.groupby("Country")["Profits"].sum().sort_values(ascending=False).head(4).reset_index()
+            fig1 = px.bar(top_countries, x="Country", y="Profits", title="Top Countries by Profits (Filtered)",
                           color="Profits", color_continuous_scale="Bluered")
             st.plotly_chart(fig1, use_container_width=True)
             
-        # الرسمة 2: توزيع الأرباح حسب الجنس (Pie Chart تفاعلي)
-        if "Gender" in df.columns and "Profits" in df.columns:
-            gender_profits = df.groupby("Gender")["Profits"].sum().reset_index()
+        if "Gender" in df_filtered.columns and "Profits" in df_filtered.columns:
+            gender_profits = df_filtered.groupby("Gender")["Profits"].sum().reset_index()
             fig2 = px.pie(gender_profits, values="Profits", names="Gender", title="Profits Distribution by Gender", hole=0.4)
             st.plotly_chart(fig2, use_container_width=True)
 
     with chart_col2:
-        # الرسمة 3: أعلى 5 أنواع تحقيقاً للأرباح
-        if "Type" in df.columns and "Profits" in df.columns:
-            top_types = df.groupby("Type")["Profits"].sum().sort_values(ascending=False).head(5).reset_index()
-            fig3 = px.bar(top_types, x="Type", y="Profits", title="Top 5 Types by Profits", 
-                          color="Type", color_discrete_sequence=px.colors.qualitative.Pastel)
+        if "Type" in df_filtered.columns and "Profits" in df_filtered.columns:
+            top_types = df_filtered.groupby("Type")["Profits"].sum().sort_values(ascending=False).head(5).reset_index()
+            fig3 = px.bar(top_types, x="Type", y="Profits", title="Top Product Types by Profits", color="Type")
             st.plotly_chart(fig3, use_container_width=True)
             
-        # عرض عينة تفاعلية من البيانات للزوار
-        with st.expander("👀 View Data Snapshot"):
-            st.dataframe(df.head(10), use_container_width=True)
+        with st.expander("👀 View Filtered Data Snapshot"):
+            st.dataframe(df_filtered.head(10), use_container_width=True)
 
-    # --- 3. قسم التنبؤ بالذكاء الاصطناعي (AI Forecasting) ---
-    if "Profits" in df.columns:
+    # --- 3. التنبؤ بالذكاء الاصطناعي بناءً على البيانات المفلترة ---
+    if "Profits" in df_filtered.columns and len(df_filtered) > 1:
         st.markdown("---")
-        st.markdown("### 🔮 AI Future Trend Forecasting")
+        st.markdown("### 🔮 AI Future Trend Forecasting (Based on Selection)")
         
-        # تجهيز البيانات للموديل
-        df['_Index'] = np.arange(len(df))
-        X_model = df[['_Index']]
-        y_model = df['Profits']
+        df_filtered['_Index'] = np.arange(len(df_filtered))
+        X_model = df_filtered[['_Index']]
+        y_model = df_filtered['Profits']
         
         model = LinearRegression()
         model.fit(X_model, y_model)
         
-        # Slider تفاعلي يغير التنبؤ لحظياً
-        future_steps = st.slider("Select lines/steps to forecast into the future:", 5, 100, 20)
-        future_idx = np.arange(len(df), len(df) + future_steps).reshape(-1, 1)
+        future_steps = st.slider("Select steps to forecast into the future:", 5, 100, 20)
+        future_idx = np.arange(len(df_filtered), len(df_filtered) + future_steps).reshape(-1, 1)
         predictions = model.predict(future_idx)
         
-        # دمج البيانات للعرض على الرسمة
         pred_df = pd.DataFrame({
-            'Index': np.append(df['_Index'].values, future_idx.flatten()),
+            'Index': np.append(df_filtered['_Index'].values, future_idx.flatten()),
             'Profits ($)': np.append(y_model.values, predictions),
-            'Data Type': ['Historical'] * len(df) + ['AI Forecast'] * future_steps
+            'Data Type': ['Historical'] * len(df_filtered) + ['AI Forecast'] * future_steps
         })
         
-        fig_forecast = px.line(pred_df, x='Index', y='Profits ($)', color='Data Type', 
-                               title="AI Linear Trend Prediction Dashboard", markers=True)
+        fig_forecast = px.line(pred_df, x='Index', y='Profits ($)', color='Data Type', title="AI Linear Trend Prediction", markers=True)
         st.plotly_chart(fig_forecast, use_container_width=True)
+    else:
+        st.warning("⚠️ Not enough data points in the current filter to generate an AI Forecast.")
 
 except Exception as e:
-    st.error(f"❌ Error displaying the dashboard components: {e}")
+    st.error(f"❌ Error displaying components: {e}")
