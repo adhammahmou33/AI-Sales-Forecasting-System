@@ -7,30 +7,38 @@ from sklearn.linear_model import LinearRegression
 # إعداد الصفحة
 st.set_page_config(page_title="AI Sales Forecasting System", page_icon="📈", layout="wide")
 # --- إضافة خلفية متحركة هادية ومتناسقة مع الدارك مود ---
+# --- إضافة خلفية متحركة هادية ومتناسقة مع الدارك مود مجربة ومضمونة ---
 st.markdown(
     """
     <style>
-    /* تثبيت الخلفية وجعلها تغطي الشاشة بالكامل خلف العناصر */
-    .stApp {
-        background: linear-gradient(125deg, #0e1117, #161b22, #0d1117, #1f242c);
-        background-size: 400% 400%;
-        animation: GradientAnimation 15s ease infinite;
+    /* استهداف الخلفية الأساسية وجسم الصفحة بالكامل لضمان الظهور */
+    .stApp, .main, .block-container, [data-testid="stAppViewContainer"] {
+        background: linear-gradient(125deg, #0e1117, #161b22, #0d1117, #1f242c) !important;
+        background-size: 400% 400% !important;
+        animation: GradientAnimation 15s ease infinite !important;
     }
 
-    /* تأثير الحركة الانسيابية البطيئة (أشبه بأمواج الألوان الهادئة) */
+    /* تأثير الحركة الانسيابية البطيئة للألوان */
     @keyframes GradientAnimation {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
 
-    /* جعل الكروت والصناديق شفافة بشكل زجاجي احترافي (Glassmorphism) */
-    div[data-testid="stMetricValue"], div[data-testid="stExpander"], .stAlert {
-        background: rgba(255, 255, 255, 0.03) !important;
-        backdrop-filter: blur(10px);
-        border-radius: 10px;
-        padding: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+    /* تأثير زجاجي احترافي للكروت والصناديق (Glassmorphism) */
+    div[data-testid="stMetricValue"], div[data-testid="stMetric"], div[data-testid="stExpander"], .stAlert {
+        background-color: rgba(255, 255, 255, 0.04) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border-radius: 12px !important;
+        padding: 15px !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* ضبط لون نصوص الـ Metrics عشان تليق مع الزجاج */
+    div[data-testid="stMetricLabel"] {
+        color: #e2e8f0 !important;
     }
     </style>
     """,
