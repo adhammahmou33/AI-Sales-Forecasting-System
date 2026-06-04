@@ -7,45 +7,7 @@ from sklearn.linear_model import LinearRegression
 # إعداد الصفحة
 st.set_page_config(page_title="AI Sales Forecasting System", page_icon="📈", layout="wide")
 # --- إضافة خلفية متحركة هادية ومتناسقة مع الدارك مود ---
-# --- تكتيك الاختراق الكامل لـ CSS خلفية Streamlit ---
-st.markdown(
-    """
-    <style>
-    /* تصفير وإخفاء خلفيات المكونات الافتراضية تماماً لإظهار الأنيميشن */
-    html, body, .stApp, .main, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-        background: linear-gradient(125deg, #0e1117, #161b22, #0d1117, #1f242c) !important;
-        background-size: 400% 400% !important;
-        animation: GradientAnimation 12s ease infinite !important;
-    }
 
-    /* تأثير حركة الألوان الإنسيابية المهدئة للأعصاب */
-    @keyframes GradientAnimation {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
-    /* جعل كروت الـ Metrics زجاجية فخمة جداً (Glassmorphism) */
-    div[data-testid="stMetricValue"], div[data-testid="stMetric"] {
-        background: rgba(255, 255, 255, 0.03) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-        border-radius: 12px !important;
-        padding: 15px !important;
-        border: 1px solid rgba(255, 255, 255, 0.05) !important;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
-    }
-
-    /* جعل لون الـ Expander متناسق وزجاجي */
-    div[data-testid="stExpander"] {
-        background: rgba(255, 255, 255, 0.02) !important;
-        border-radius: 10px !important;
-        border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 st.title("📈 AI Sales Forecasting System")
 st.subheader("Predict future sales and analyze business performance using Machine Learning")
 
